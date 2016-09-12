@@ -64,19 +64,18 @@ class BaseAlgorithm
       return (r[r.length / 2] + r[r.length / 2 + 1]) / 2.0
     end
   end
-end
-
-class Algorithm1 < BaseAlgorithm
-  def initialize
-    a, b = 100, 200
-    @hashes = a.times.map { UniformHashFamily.new b} 
-    @counter = ABCounter.new a, b
-  end
 
   def << v
     @hashes.each_with_index {|h, idx| @counter.inc idx, h[v] }
   end
 
+  def initialize(a, b)
+    @hashes = a.times.map { UniformHashFamily.new b} 
+    @counter = ABCounter.new a, b
+  end
+end
+
+class Algorithm1 < BaseAlgorithm
   def count v
     vals = @hashes.each_with_index.map {|h, idx| @counter[idx, h[v]] }
     median vals
@@ -84,13 +83,25 @@ class Algorithm1 < BaseAlgorithm
 end
 
 class Algorithm2 < BaseAlgorithm
+  def count v
+    ni = neighbour(v)
+    vals = @hashes.each_with_index.map {|h, idx| @counter[idx, h[v]] - @counter[idx, h[ni]] }
+    median vals
+  end
+
+  private
+  def neighbour(n)
+    n.even? ?  n + 1 : n - 1
+  end
 end
 
-alg1 = Algorithm1.new
-alg1 << 1
-alg1 << 2
-alg1 << 3
-alg1 << 3
-alg1 << 3
-alg1 << 3
-puts alg1.count(3)
+alg = Algorithm1.new(100, 200)
+alg << 1
+alg << 2
+alg << 3
+alg << 3
+alg << 3
+alg << 3
+puts alg.count(3)
+
+# alg2 = Algorithm2.new
