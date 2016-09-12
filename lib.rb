@@ -75,15 +75,13 @@ class BaseAlgorithm
   end
 end
 
-class Algorithm1 < BaseAlgorithm
-  def count v
+class Algorithm < BaseAlgorithm
+  def count1 v
     vals = @hashes.each_with_index.map {|h, idx| @counter[idx, h[v]] }
     median vals
   end
-end
 
-class Algorithm2 < BaseAlgorithm
-  def count v
+  def count2 v
     ni = neighbour(v)
     vals = @hashes.each_with_index.map {|h, idx| @counter[idx, h[v]] - @counter[idx, h[ni]] }
     median vals
@@ -95,13 +93,17 @@ class Algorithm2 < BaseAlgorithm
   end
 end
 
-alg = Algorithm1.new(100, 200)
-alg << 1
-alg << 2
-alg << 3
-alg << 3
-alg << 3
-alg << 3
-puts alg.count(3)
+class PureCount
+  def initialize
+    @counter = Hash.new(0)
+  end
 
-# alg2 = Algorithm2.new
+  def << v
+    @counter[v] += 1
+  end
+
+  def query(k)
+    @counter[k]
+  end
+end
+
